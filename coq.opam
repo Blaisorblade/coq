@@ -42,3 +42,5 @@ build: [
 install: [
   [make "install"]
 ]
+name: "coq"
+version: "8.11.0"
