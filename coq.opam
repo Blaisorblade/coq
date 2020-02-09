@@ -19,15 +19,26 @@ dev-repo: "git+https://github.com/coq/coq.git"
 license: "LGPL-2.1"
 
 depends: [
-  "ocaml"     {         >= "4.05.0" }
-  "dune"      { build & >= "1.10.0"  }
-  "ocamlfind" { build }
+  "ocaml" {>= "4.05.0" & < "4.10"}
+  "ocamlfind" {build}
   "num"
+  "conf-findutils" {build}
 ]
-
 build: [
-  [ "./configure" "-prefix" prefix "-native-compiler" "no" ]
-  [ "dune" "build" "@vodeps" ]
-  [ "dune" "exec" "coq_dune" "_build/default/.vfiles.d" ]
-  [ "dune" "build" "-p" name "-j" jobs ]
+  [
+    "./configure"
+    "-configdir" "%{lib}%/coq/config"
+    "-prefix" prefix
+    "-mandir" man
+    "-docdir" doc
+    "-libdir" "%{lib}%/coq"
+    "-datadir" "%{share}%/coq"
+    "-coqide" "no"
+    "-flambda-opts" "-O3 -unbox-closures"
+    "-native-compiler" "no"
+  ]
+  [make "-j%{jobs}%"]
+]
+install: [
+  [make "install"]
 ]
