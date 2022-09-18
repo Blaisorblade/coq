@@ -27,9 +27,9 @@ depends: [
   "coq-core" {= version}
   "odoc" {with-doc}
 ]
+depopts: ["coq-native"]
 build: [
-  # Requires dune 2.8 due to https://github.com/ocaml/dune/issues/3219
-  # ["dune" "subst"] {pinned}
+  ["dune" "subst"] {dev}
   #
   # XXX need to run configure as in coq-core, or else dunestrap will
   # use the default rule in config
@@ -48,10 +48,11 @@ build: [
     name
     "-j"
     jobs
+    "--promote-install-files=false"
     "@install"
     "@runtest" {with-test}
     "@doc" {with-doc}
   ]
+  ["dune" "install" "-p" name "--create-install-files" name]
 ]
 dev-repo: "git+https://github.com/coq/coq.git"
-depopts: ["coq-native"]
