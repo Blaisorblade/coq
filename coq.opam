@@ -23,6 +23,7 @@ depends: [
   "dune" {>= "2.9"}
   "coq-core" {= version}
   "coq-stdlib" {= version}
+  "odoc" {with-doc}
 ]
 build: [
   ["dune" "subst"] {pinned}
