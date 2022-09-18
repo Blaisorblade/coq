@@ -30,17 +30,6 @@ depends: [
 depopts: ["coq-native"]
 build: [
   ["dune" "subst"] {dev}
-  #
-  # XXX need to run configure as in coq-core, or else dunestrap will
-  # use the default rule in config
-  [ "./configure"
-    "-prefix" prefix
-    "-mandir" man
-    "-libdir" "%{lib}%/coq"
-    "-coqide" "no"
-    "-native-compiler" "yes" {coq-native:installed} "no" {!coq-native:installed}
-  ]
-  [ make "dunestrap" "COQ_DUNE_EXTRA_OPT=-split" ]
   [
     "dune"
     "build"

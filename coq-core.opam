@@ -37,13 +37,6 @@ depends: [
 depopts: ["coq-native"]
 build: [
   ["dune" "subst"] {dev}
-  [ "./configure"
-    "-prefix" prefix
-    "-mandir" man
-    "-libdir" "%{lib}%/coq"
-    "-coqide" "no"
-    "-native-compiler" "yes" {coq-native:installed} "no" {!coq-native:installed}
-  ]
   [
     "dune"
     "build"
