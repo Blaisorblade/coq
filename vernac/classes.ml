@@ -233,7 +233,8 @@ let subst_class (subst,cl) =
     cl_props = do_subst_ctx cl.cl_props;
     cl_projs = do_subst_projs cl.cl_projs;
     cl_strict = cl.cl_strict;
-    cl_unique = cl.cl_unique }
+    cl_unique = cl.cl_unique;
+    cl_really_unique = cl.cl_really_unique }
 
 let discharge_class cl =
   try
@@ -248,7 +249,8 @@ let discharge_class cl =
       cl_props = props;
       cl_projs = List.Smart.map discharge_proj cl.cl_projs;
       cl_strict = cl.cl_strict;
-      cl_unique = cl.cl_unique
+      cl_unique = cl.cl_unique;
+      cl_really_unique = cl.cl_really_unique
     }
   with Not_found -> (* not defined in the current section *)
     cl

@@ -55,6 +55,11 @@ type typeclass = {
   cl_unique : bool;
   (** Whether we can assume that instances are unique, which allows
       no backtracking and sharing of resolution. *)
+
+  cl_really_unique : bool;
+  (** The same as above but *really*, i.e. in a way that
+      also prevents backtracking on goals whose type contains
+      evars. *)
 }
 
 type instance = {

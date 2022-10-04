@@ -460,6 +460,12 @@ let is_unique env sigma concl =
     cl.cl_unique
   with e when CErrors.noncritical e -> false
 
+let is_really_unique env sigma concl =
+  try
+    let (cl,u), args = dest_class_app env sigma concl in
+    cl.cl_really_unique
+  with e when CErrors.noncritical e -> false
+
 (** Sort the undefined variables from the least-dependent to most dependent. *)
 let top_sort evm undefs =
   let l' = ref [] in
@@ -585,7 +591,8 @@ module Search = struct
       If the type class is unique or in Prop
       and there are no evars in the goal then we do
       NOT backtrack. *)
-  let needs_backtrack env evd unique concl =
+  let needs_backtrack env evd unique really_unique concl =
+    if really_unique then false else
     if unique || is_Prop env evd concl then
       occur_existential evd concl
     else true
@@ -756,7 +763,8 @@ module Search = struct
     let concl = Goal.concl gl in
     let sigma = Goal.sigma gl in
     let unique = not info.search_dep || is_unique env sigma concl in
-    let backtrack = needs_backtrack env sigma unique concl in
+    let really_unique = is_really_unique env sigma concl in
+    let backtrack = needs_backtrack env sigma unique really_unique concl in
     let () = ppdebug 0 (fun () ->
         pr_depth info.search_depth ++ str": looking for " ++
         Printer.pr_econstr_env (Goal.env gl) sigma concl ++

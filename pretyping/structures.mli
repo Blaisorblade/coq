@@ -24,6 +24,7 @@ type projection = {
 type t = {
   name : Names.inductive;
   projections : projection list;
+  nconstants : int;
   nparams : int;
 }
 

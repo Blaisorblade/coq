@@ -49,26 +49,28 @@ type projection = {
 type t = {
   name : Names.inductive;
   projections : projection list;
+  nconstants : int;
   nparams : int;
 }
 
 let make env name projections =
   let nparams = Inductiveops.inductive_nparams env name in
-  { name; projections; nparams }
+  let nconstants = (Inductiveops.constructors_nrealdecls env name).(0) in
+  { name; projections; nparams; nconstants }
 
 let structure_table =
   Summary.ref (Indmap.empty : t Indmap.t) ~name:"record-structs"
 let projection_table =
   Summary.ref (Cmap.empty : t Cmap.t) ~name:"record-projs"
 
-let register ({ name; projections; nparams } as s) =
+let register ({ name; projections } as s) =
   structure_table := Indmap.add name s !structure_table;
   projection_table :=
     List.fold_right (fun { proj_body } m ->
       Option.fold_right (fun proj -> Cmap.add proj s) proj_body m)
     projections !projection_table
 
-let subst subst ({ name; projections; nparams } as s) =
+let subst subst ({ name; projections } as s) =
   let subst_projection subst ({ proj_body } as p) =
     let proj_body = Option.Smart.map (subst_constant subst) proj_body in
     if proj_body == p.proj_body then p else
@@ -78,7 +80,7 @@ let subst subst ({ name; projections; nparams } as s) =
   if projections == s.projections &&
      name == s.name
   then s
-  else { name; projections; nparams }
+  else { s with name; projections }
 
 let rebuild env s =
   let mib = Environ.lookup_mind (fst s.name) env in
@@ -304,7 +306,7 @@ let make env sigma ref =
       error_not_structure ref
         (str "Could not find the record or structure " ++ Termops.Internal.print_constr_env env sigma (EConstr.mkInd indsp)) in
   let ntrue_projs = List.count (fun { Structure.proj_true = x } -> x) s.Structure.projections in
-  if s.Structure.nparams + ntrue_projs > Array.length args then
+  if s.Structure.nparams + ntrue_projs - s.Structure.nconstants > Array.length args then
     error_not_structure ref (str "Got too few arguments to the record or structure constructor");
   (ref,indsp)
 

@@ -64,6 +64,8 @@ type typeclass = {
   cl_strict : bool;
 
   cl_unique : bool;
+
+  cl_really_unique : bool;
 }
 
 type typeclasses = typeclass GlobRef.Map.t
